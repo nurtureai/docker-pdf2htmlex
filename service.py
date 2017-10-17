@@ -20,7 +20,7 @@ def hello_world():
 
 # Note that the original from AIT did this: --embed-font 0 --process-outline 0 
 # The former was to reduce size, the latter to avoid showing the outline (which takes up a lot of space on screen)
-def run_pdftohtmlex(url, first_page="1", last_page = None):
+def run_pdftohtmlex(url, zoom="1", first_page="1", last_page = None):
     # Cache to temp file:
     in_f  = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
     urllib.urlretrieve(url, in_f.name)
@@ -29,9 +29,9 @@ def run_pdftohtmlex(url, first_page="1", last_page = None):
     out_d, out_name = os.path.split(out_f.name)
     # run process
     if last_page:
-        cmd = ['pdf2htmlEX', '--process-outline', '0', '--first-page', first_page,'--last-page', last_page, '--dest-dir', "%s/" % out_d, in_f.name, out_name]
+        cmd = ['pdf2htmlEX', '--process-outline', '0', '--first-page', first_page,'--last-page', last_page, '--zoom', zoom, '--dest-dir', "%s/" % out_d, in_f.name, out_name]
     else:
-        cmd = ['pdf2htmlEX', '--process-outline', '0', '--dest-dir', "%s/" % out_d, in_f.name, out_name]
+        cmd = ['pdf2htmlEX', '--process-outline', '0', '--zoom', zoom, '--dest-dir', "%s/" % out_d, in_f.name, out_name]
     logging.debug("Running: %s" % cmd )
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = p.communicate()
@@ -50,14 +50,15 @@ def convert():
         return abort(400)
     first_page = request.args.get('first_page')
     last_page = request.args.get('last_page')
+    zoom = request.args.get("z")
     # Process it:
     logging.debug('URL is: %s' % url)
     if last_page:
         if not first_page:
             first_page = "1"
-        result = run_pdftohtmlex(url, first_page, last_page)
+        result = run_pdftohtmlex(url, zoom, first_page, last_page)
     else:
-        result = run_pdftohtmlex(url)
+        result = run_pdftohtmlex(url, zoom)
     return send_file(result,attachment_filename="testing.html",
                      as_attachment=False)
 
