@@ -29,16 +29,16 @@ def run_pdftohtmlex(url, zoom="1", first_page="1", last_page = None):
     out_d, out_name = os.path.split(out_f.name)
     # run process
     if last_page:
-        cmd = ['pdf2htmlEX', '--process-outline', '0', '--first-page', first_page,'--last-page', last_page, '--zoom', zoom, '--dest-dir', "%s/" % out_d, in_f.name, out_name]
+        cmd = ['pdf2htmlEX', '--process-outline', '0', '--debug', '1', '--first-page', first_page,'--last-page', last_page, '--zoom', zoom, '--dest-dir', "%s/" % out_d, in_f.name, out_name]
     else:
-        cmd = ['pdf2htmlEX', '--process-outline', '0', '--zoom', zoom, '--dest-dir', "%s/" % out_d, in_f.name, out_name]
-    logging.debug("Running: %s" % cmd )
+        cmd = ['pdf2htmlEX', '--process-outline', '0', '--debug', '1', '--zoom', zoom, '--dest-dir', "%s/" % out_d, in_f.name, out_name]
+    logging.info("Running: %s" % " ".join(cmd) )
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = p.communicate()
     if( out ):
       logging.debug("pdf2htmlEX STDOUT %s" % out)
     if( err ):
-      logging.debug("pdf2htmlEX STDERR: %s" % err)
+      logging.error("pdf2htmlEX STDERR: %s" % err)
     # return the file
     return out_f.name
 
@@ -52,7 +52,7 @@ def convert():
     last_page = request.args.get('last_page')
     zoom = request.args.get("z")
     # Process it:
-    logging.debug('URL is: %s' % url)
+    logging.info('URL is: %s' % url)
     if last_page:
         if not first_page:
             first_page = "1"
