@@ -1,6 +1,11 @@
 pdf2htmlEX in Docker
 ====================
 
+## to build
+
+* docker build -t nurtureai/pdf2htmlex
+* docker push nurtureai/pdf2htmlex
+
 A python web service that runs [pdf2htmlEX][1] on a URL.
 
 Usage:
