@@ -44,7 +44,11 @@ RUN \
 RUN \
   pip install gevent
 
-RUN pdf2htmlEX -v
+
+RUN echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+RUN /bin/bash -c "source ~/.bashrc"
+
+RUN LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH pdf2htmlEX -v
 
 VOLUME /pdf/tmp
 WORKDIR /pdf
