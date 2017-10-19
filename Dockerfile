@@ -44,11 +44,8 @@ RUN \
 RUN \
   pip install gevent
 
-
-RUN echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
-RUN /bin/bash -c "source ~/.bashrc"
-
-RUN LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH pdf2htmlEX -v
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+RUN pdf2htmlEX -v
 
 VOLUME /pdf/tmp
 WORKDIR /pdf
@@ -58,4 +55,3 @@ ADD service.py /pdf/service.py
 ADD gunicorn.ini /pdf/gunicorn.ini.py
 
 CMD gunicorn -c gunicorn.ini.py service:app
-
