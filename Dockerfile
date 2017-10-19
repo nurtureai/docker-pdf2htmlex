@@ -14,20 +14,21 @@ RUN apt-get update && apt-get install -qq git cmake autotools-dev libjpeg-dev li
 #Clone the pdf2htmlEX fork of fontforge
 #compile it
 #
-RUN mkdir -p /pdf/pdf2htmlex
-RUN git clone https://github.com/coolwanglu/fontforge.git /pdf/pdf2htmlex/fontforge.git
-RUN cd /pdf/pdf2htmlex/fontforge.git && git checkout pdf2htmlEX && ./autogen.sh && ./configure && make V=1 && make install
+RUN git clone https://github.com/coolwanglu/fontforge.git fontforge.git
+RUN cd /fontforge.git && git checkout pdf2htmlEX && ./autogen.sh && ./configure && make V=1 && make install
 
+RUN apt-get install -qq -y wget pkg-config libopenjpeg-dev libfontconfig1-dev libfontforge-dev poppler-data poppler-utils poppler-dbg
 #
 #Install poppler utils
 #
-RUN apt-get install -qq libpoppler-glib-dev
-
+#RUN apt-get install -qq libpoppler-glib-dev
+RUN wget http://poppler.freedesktop.org/poppler-0.33.0.tar.xz && tar -xvf poppler-0.33.0.tar.xz
+RUN cd poppler-0.33.0/ && ./configure --enable-xpdf-headers && make && make install
 #
 #Clone and install the pdf2htmlEX git repo
 #
 RUN git clone git://github.com/coolwanglu/pdf2htmlEX.git
-RUN cd pdf2htmlEX && cmake . && make && sudo make install
+RUN cd pdf2htmlEX && pwd && git checkout tags/v0.14.6 && cmake . && make && sudo make install
 
 # update debian source list
 RUN \
@@ -36,9 +37,14 @@ RUN \
     apt-get -qqy install python-dev python-flask gunicorn python-pip && \
     rm -rf /var/lib/apt/lists/*
 
+# clean up
+RUN \
+	rm -Rf /poppler-0.33.0 /fontforge.git /pdf2htmlEX
 
 RUN \
   pip install gevent
+
+RUN pdf2htmlEX -v
 
 VOLUME /pdf/tmp
 WORKDIR /pdf
